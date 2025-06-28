@@ -16,6 +16,7 @@
             AI瞎评的，别当真！尽量别直接上传自己照片。
             <button :disabled="loading" @click="start">{{ loading ? "AI回复中" : "开始评价" }}</button><br>
             <span v-if="rate >= 0">可操性：{{ rate }}/10，{{ verdict ? "上了😍" : "不上🤮" }}</span>
+            <span v-if="appe >= 0">颜值评分：{{ appe }}/10</span>
             <div class="output">{{ aiOutput }}</div>
         </ContainerFrame>
     </div>
@@ -42,6 +43,7 @@ const apikey = ref("");
 const loading = ref(false);
 const rate = ref(-1);
 const verdict = ref(false);
+const appe = ref(-1);
 const usableSouls = [
     "欲望化身",
     "霸道总裁",
@@ -85,6 +87,7 @@ async function start() {
     aiOutput.value = response.explanation;
     rate.value = response.rating;
     verdict.value = response.verdict;
+    appe.value = response.appearance;
     loading.value = false;
 }
 </script>

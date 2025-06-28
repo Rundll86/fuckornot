@@ -57,9 +57,13 @@ def requestGemini(baseUrl: str, soulname: str, imageData: bytes, language: str):
                             "type": "STRING",
                             "description": "你的评语/解释",
                         },
+                        "appearance": {
+                            "type": "NUMBER",
+                            "description": "颜值评分，1到10的数字",
+                        },
                     },
                     "nullable": False,
-                    "required": ["verdict", "rating", "explanation"],
+                    "required": ["verdict", "rating", "explanation", "appearance"],
                 },
             },
             "safetySettings": [
