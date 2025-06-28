@@ -8,8 +8,8 @@ def getMD5(data):
     return hashlib.md5(data).hexdigest()
 
 
-def requestGemini(apiKey: str, baseUrl: str, soulname: str, imageData: bytes):
-    requests.post(
+def requestGemini(baseUrl: str, soulname: str, imageData: bytes):
+    return requests.post(
         baseUrl,
         json={
             "system_instruction": {
@@ -49,7 +49,7 @@ def requestGemini(apiKey: str, baseUrl: str, soulname: str, imageData: bytes):
                             "description": "上还是不上",
                         },
                         "rating": {
-                            "type": "STRING",
+                            "type": "NUMBER",
                             "description": "1到10的数字",
                         },
                         "explanation": {
@@ -85,4 +85,4 @@ def requestGemini(apiKey: str, baseUrl: str, soulname: str, imageData: bytes):
             ],
         },
         timeout=30,
-    )
+    ).json()
