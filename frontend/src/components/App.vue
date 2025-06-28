@@ -5,12 +5,15 @@
             上传一张照片，让AI来评价图中角色的可操性。
             <img class="preview" :src="imageUrl" alt="Uploaded Image" v-if="imageUrl" />
             <button @click="upload">点击上传</button>
-            使用的AI人格：
-            <SelectBar :options="usableSouls" v-model:selected="useSoul" />
             使用的Gemini ApiKey：
             <input type="password" v-model="apikey">
             回复语言：
             <SelectBar :options="languages" v-model:selected="language" />
+            使用的AI人格：
+            <SelectBar :options="soulsKeyMap" v-model:selected="useSoul" />
+            <div class="output" @click="checkPreview">
+                {{ previewing ? soulsKeyPair[soulsKeyMap[useSoul]] : "点击展示提示词" }}
+            </div>
         </ContainerFrame>
         <ContainerFrame title="输出" v-if="imageUrl">
             AI瞎评的，别当真！尽量别直接上传自己照片。
@@ -26,6 +29,7 @@ import { computed, ref } from "vue";
 import ContainerFrame from "./ContainerFrame.vue";
 import Navbar from "./Navbar.vue";
 import SelectBar from "./SelectBar.vue";
+
 const imageFile = ref<File | null>(null);
 const imageData = ref<ArrayBuffer | null>(null);
 const imageUrl = computed(() => {
@@ -37,16 +41,30 @@ const imageUrl = computed(() => {
     }
     return URL.createObjectURL(new Blob([imageData.value]));
 });
-const useSoul = ref(0);
-const aiOutput = ref("");
-const apikey = ref("");
 const loading = ref(false);
+const previewing = ref(false);
+
+const apikey = ref("");
+const useSoul = ref(0);
+
+const aiOutput = ref("");
 const rate = ref(-1);
 const verdict = ref(false);
 const appe = ref(-1);
-const usableSouls = require.context("../../../public/prompts", false, /\.txt$/i).keys().map(path => path.replace(/\.txt$/i, "").slice(2));
-const languages = ["中文", "English", "日本語", "한국어"];
 const language = ref(0);
+
+const languages = ["中文", "English", "日本語", "한국어"];
+const contextRequire = require.context("../../../public/prompts", false, /\.txt$/i);
+const soulsKeyMap = ref(contextRequire.keys().map(removeSuffixAndPrefix));
+const soulsKeyPair = ref(Object.fromEntries(soulsKeyMap.value.map(key => [key, contextRequire(`./${key}.txt`).default])));
+
+function removeSuffixAndPrefix(target: string) {
+    return target.slice(2, -4);
+}
+
+function checkPreview() {
+    previewing.value = !previewing.value;
+}
 function upload() {
     const input = document.createElement("input");
     input.type = "file";
@@ -69,7 +87,7 @@ async function start() {
     if (!imageFile.value) return;
     const form = new FormData();
     form.append("image", imageFile.value);
-    form.append("soul", usableSouls[useSoul.value]);
+    form.append("soul", soulsKeyMap.value[useSoul.value]);
     form.append("language", languages[language.value]);
     form.append("key", apikey.value);
     const response = JSON.parse(await fetch("/api", {
