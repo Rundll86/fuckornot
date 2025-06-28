@@ -1,9 +1,11 @@
 import flask
 from os import path
+from flask_cors import CORS
 from engine import util
 
 
 app = flask.Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.route("/")
