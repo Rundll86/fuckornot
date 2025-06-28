@@ -44,14 +44,7 @@ const loading = ref(false);
 const rate = ref(-1);
 const verdict = ref(false);
 const appe = ref(-1);
-const usableSouls = [
-    "欲望化身",
-    "霸道总裁",
-    "耽美鉴赏家",
-    "恋物诗人",
-    "纯欲神官",
-    "百合诗人",
-];
+const usableSouls = require.context("../../../public/prompts", false, /\.txt$/i).keys().map(path => path.replace(/\.txt$/i, "").slice(2));
 const languages = ["中文", "English", "日本語", "한국어"];
 const language = ref(0);
 function upload() {

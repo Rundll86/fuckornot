@@ -8,6 +8,7 @@
         "baseUrl": ".",
         "types": [
             "webpack",
+            "webpack-env",
             "node",
             "vue"
         ]
