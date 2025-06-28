@@ -4,8 +4,8 @@ from os import path
 cwd = os.getcwd()
 
 
-def getMD5(data):
-    return hashlib.md5(data).hexdigest()
+def getMD5(data: str):
+    return hashlib.md5(data.encode("utf-8")).hexdigest()
 
 
 def requestGemini(baseUrl: str, soulname: str, imageData: bytes):
