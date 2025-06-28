@@ -13,4 +13,4 @@ RUN yarn install
 RUN yarn build
 
 EXPOSE 5000
-CMD ["python", "server.py"]
+CMD ["python", "backend/server.py"]
