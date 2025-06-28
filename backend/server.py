@@ -1,6 +1,6 @@
 import flask
 from os import path
-from engine import util, config
+from engine import util
 
 
 app = flask.Flask(__name__)
@@ -23,13 +23,14 @@ def api():
     file.save(savePath)
 
     imageData = open(savePath, "rb").read()
-    apikey = config.apikey["gemini"]
+    apikey = flask.request.form.get("key", "")
     soul = flask.request.form.get("soul", "desire_avatar")
     return util.requestGemini(
         f"https://api-proxy.me/gemini/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key={apikey}",
         soul,
         imageData,
-    )
+        flask.request.form.get("language", "中文"),
+    )["candidates"][0]["content"]["parts"][0]["text"]
 
 
 app.run("0.0.0.0", port=5000)

@@ -7,11 +7,16 @@
             <button @click="upload">点击上传</button>
             使用的AI人格：
             <SelectBar :options="usableSouls" v-model:selected="useSoul" />
+            使用的Gemini ApiKey：
+            <input type="password" v-model="apikey">
+            回复语言：
+            <SelectBar :options="languages" v-model:selected="language" />
         </ContainerFrame>
-        <ContainerFrame v-if="imageUrl">
+        <ContainerFrame title="输出" v-if="imageUrl">
             AI瞎评的，别当真！尽量别直接上传自己照片。
-            <button @click="start">开始评价</button>
-            <textarea disabled></textarea>
+            <button :disabled="loading" @click="start">{{ loading ? "AI回复中" : "开始评价" }}</button><br>
+            <span v-if="rate >= 0">可操性：{{ rate }}/10，{{ verdict ? "上了😍" : "不上🤮" }}</span>
+            <div class="output">{{ aiOutput }}</div>
         </ContainerFrame>
     </div>
 </template>
@@ -32,6 +37,11 @@ const imageUrl = computed(() => {
     return URL.createObjectURL(new Blob([imageData.value]));
 });
 const useSoul = ref(0);
+const aiOutput = ref("");
+const apikey = ref("");
+const loading = ref(false);
+const rate = ref(-1);
+const verdict = ref(false);
 const usableSouls = [
     "欲望化身",
     "霸道总裁",
@@ -40,6 +50,8 @@ const usableSouls = [
     "纯欲神官",
     "百合诗人",
 ];
+const languages = ["中文", "English", "日本語", "한국어"];
+const language = ref(0);
 function upload() {
     const input = document.createElement("input");
     input.type = "file";
@@ -58,15 +70,22 @@ function upload() {
     input.click();
 }
 async function start() {
+    loading.value = true;
     if (!imageFile.value) return;
     const form = new FormData();
     form.append("image", imageFile.value);
     form.append("soul", usableSouls[useSoul.value]);
-    const response = await fetch("/api", {
+    form.append("language", languages[language.value]);
+    form.append("key", apikey.value);
+    const response = JSON.parse(await fetch("/api", {
         method: "POST",
         body: form
-    }).then(e => e.json());
+    }).then(e => e.text()));
     console.log(response);
+    aiOutput.value = response.explanation;
+    rate.value = response.rating;
+    verdict.value = response.verdict;
+    loading.value = false;
 }
 </script>
 <style scoped>
@@ -75,7 +94,7 @@ async function start() {
 }
 
 .preview {
-    width: 50vw;
+    width: 300px;
     border: 2px solid gray;
 }
 
@@ -94,5 +113,11 @@ input,
 textarea {
     border: gray 2px solid;
     transition: none;
+    padding: 3px 5px;
+    border-radius: 5px;
+}
+
+.output {
+    max-width: 50%;
 }
 </style>

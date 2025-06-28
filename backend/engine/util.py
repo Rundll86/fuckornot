@@ -8,19 +8,20 @@ def getMD5(data: str):
     return hashlib.md5(data.encode("utf-8")).hexdigest()
 
 
-def requestGemini(baseUrl: str, soulname: str, imageData: bytes):
+def requestGemini(baseUrl: str, soulname: str, imageData: bytes, language: str):
     return requests.post(
         baseUrl,
         json={
             "system_instruction": {
                 "parts": [
+                    {"text": f"你必须使用【{language}】回答问题。"},
                     {
                         "text": open(
                             path.join(cwd, f"public/prompts/{soulname}.txt"),
                             "r",
                             encoding="utf8",
                         ).read()
-                    }
+                    },
                 ]
             },
             "contents": [
