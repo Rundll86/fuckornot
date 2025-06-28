@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "types": [
+            "webpack",
+            "node",
+            "vue"
+        ]
+    },
+    "include": [
+        "frontend/src/**/*",
+    ]
+}
