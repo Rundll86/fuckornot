@@ -28,8 +28,13 @@
         "vue": "^3.5.13"
     },
     "scripts": {
-        "build": "webpack --mode production",
-        "dev": "webpack --mode development --watch",
+        "build": "run-s build:*",
+        "dev": "run-p dev:*",
+        "build:frontend": "webpack --mode production",
+        "build:docker": "docker build -t fuck-or-not .",
+        "dev:backend": "python backend/server.py",
+        "dev:frontend": "webpack --mode development --watch",
+        "run": "docker run -p 5000:19312 -d fuck-or-not",
         "lint": "eslint src"
     }
 }
