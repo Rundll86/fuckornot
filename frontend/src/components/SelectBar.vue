@@ -17,7 +17,6 @@
                         @mouseover="emit('update:followIndex', index)" @mouseout="emit('update:followIndex', -1)">
                         <span v-if="index === selected">▸</span>
                         {{ option }}
-                        <span v-if="index === selected">◂</span>
                     </div>
                 </div>
                 <div>
@@ -177,7 +176,7 @@ onUnmounted(() => {
     background-color: white;
     padding: 2px 4px;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     cursor: pointer;
 }
 
