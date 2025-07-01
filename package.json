@@ -34,7 +34,7 @@
         "build:docker": "docker build -t fuck-or-not .",
         "dev:backend": "python backend/server.py",
         "dev:frontend": "webpack --mode development --watch",
-        "run": "docker run -p 5000:19312 -d fuck-or-not",
+        "start": "docker run -p 5000:19312 fuck-or-not",
         "lint": "eslint src"
     }
 }
