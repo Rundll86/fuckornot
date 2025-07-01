@@ -17,7 +17,9 @@
         </ContainerFrame>
         <ContainerFrame title="输出" v-if="imageUrl">
             AI瞎评的，别当真！尽量别直接上传自己照片。
-            <button :disabled="loading" @click="start">{{ loading ? "AI回复中" : "开始评价" }}</button><br>
+            <button :disabled="loading" @click="start">
+                {{ error ? "发生错误，请刷新网页重试" : loading ? "AI回复中" : "开始评价" }}
+            </button><br>
             <span v-if="rate >= 0">可操性：{{ rate }}/10，{{ verdict ? "上了😍" : "不上🤮" }}</span>
             <span v-if="appe >= 0">颜值评分：{{ appe }}/10</span>
             <div class="output">{{ aiOutput }}</div>
@@ -42,6 +44,7 @@ const imageUrl = computed(() => {
     return URL.createObjectURL(new Blob([imageData.value]));
 });
 const loading = ref(false);
+const error = ref(false);
 const previewing = ref(false);
 
 const apikey = ref("");
@@ -61,6 +64,15 @@ const soulsKeyPair = ref(Object.fromEntries(soulsKeyMap.value.map(key => [key, c
 function removeSuffixAndPrefix(target: string) {
     return target.slice(2, -4);
 }
+function base64ToBuffer(base64: string): ArrayBuffer {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
 
 function checkPreview() {
     previewing.value = !previewing.value;
@@ -69,7 +81,8 @@ function upload() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = () => {
+    input.capture = "environment";
+    input.onchange = async () => {
         const file = input.files?.[0];
         if (file) {
             imageFile.value = file;
@@ -77,29 +90,58 @@ function upload() {
             reader.onload = () => {
                 imageData.value = reader.result as ArrayBuffer;
             };
-            reader.readAsArrayBuffer(file);
+            reader.onerror = (e) => {
+                console.error("FileReader error:", e);
+                uploadAsBase64(file);
+            };
+            try {
+                reader.readAsArrayBuffer(file);
+            } catch (e) {
+                console.error("Error reading file:", e);
+                uploadAsBase64(file);
+            }
         }
     };
     input.click();
+}
+async function uploadAsBase64(file: File) {
+    const reader = new FileReader();
+    return new Promise((resolve) => {
+        reader.onload = () => {
+            const base64Data = reader.result as string;
+            imageData.value = base64ToBuffer(base64Data);
+            resolve(base64Data);
+        };
+        reader.readAsDataURL(file);
+    });
 }
 async function start() {
     loading.value = true;
     if (!imageFile.value) return;
     const form = new FormData();
-    form.append("image", imageFile.value);
+    if (imageData.value) {
+        form.append("image", imageFile.value);
+    } else if (imageUrl.value.startsWith("data:")) {
+        form.append("image", imageUrl.value);
+    }
     form.append("soul", soulsKeyMap.value[useSoul.value]);
     form.append("language", languages[language.value]);
     form.append("key", apikey.value);
-    const response = JSON.parse(await fetch("/api", {
-        method: "POST",
-        body: form
-    }).then(e => e.text()));
-    console.log(response);
-    aiOutput.value = response.explanation;
-    rate.value = response.rating;
-    verdict.value = response.verdict;
-    appe.value = response.appearance;
-    loading.value = false;
+    try {
+        const response = JSON.parse(await fetch("/api", {
+            method: "POST",
+            body: form
+        }).then(e => e.text()));
+        console.log(response);
+        aiOutput.value = response.explanation;
+        rate.value = response.rating;
+        verdict.value = response.verdict;
+        appe.value = response.appearance;
+    } catch (e) {
+        error.value = true;
+    } finally {
+        loading.value = false;
+    }
 }
 </script>
 <style scoped>
