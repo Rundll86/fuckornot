@@ -83,19 +83,18 @@ function upload() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.capture = "environment";
     input.onchange = async () => {
         const file = input.files?.[0];
         if (file) {
             imageFile.value = file;
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.addEventListener("load", () => {
                 imageData.value = reader.result as ArrayBuffer;
-            };
-            reader.onerror = (e) => {
+            });
+            reader.addEventListener("error", (e) => {
                 console.error("FileReader error:", e);
                 uploadAsBase64(file);
-            };
+            });
             try {
                 reader.readAsArrayBuffer(file);
             } catch (e) {
