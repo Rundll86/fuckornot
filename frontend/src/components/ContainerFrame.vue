@@ -21,6 +21,7 @@ defineProps({
     border: gray 2px solid;
     text-align: center;
     margin: 10px;
+    width: fit-content;
 }
 
 .title {

@@ -24,13 +24,15 @@
             <span v-if="appe >= 0">颜值评分：{{ appe }}/10</span>
             <div class="output">{{ aiOutput }}</div>
         </ContainerFrame>
+        <FootBar />
     </div>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import ContainerFrame from "./ContainerFrame.vue";
-import Navbar from "./Navbar.vue";
+import Navbar from "./NavBar.vue";
 import SelectBar from "./SelectBar.vue";
+import FootBar from "./FootBar.vue";
 
 const imageFile = ref<File | null>(null);
 const imageData = ref<ArrayBuffer | null>(null);
@@ -146,7 +148,10 @@ async function start() {
 </script>
 <style scoped>
 .fuckornot {
-    padding: 80px;
+    padding: 80px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .preview {

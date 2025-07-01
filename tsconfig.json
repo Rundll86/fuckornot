@@ -11,7 +11,8 @@
             "webpack-env",
             "node",
             "vue"
-        ]
+        ],
+        "resolveJsonModule": true
     },
     "include": [
         "frontend/src/**/*",
