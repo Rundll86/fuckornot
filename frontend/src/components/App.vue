@@ -1,6 +1,6 @@
 <template>
     <div class="fuckornot">
-        <Navbar />
+        <NavLine />
         <ContainerFrame title="配置">
             上传一张照片，让AI来评价图中角色的可操性。
             <img class="preview" :src="imageUrl" alt="Uploaded Image" v-if="imageUrl" />
@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import ContainerFrame from "./ContainerFrame.vue";
-import Navbar from "./NavBar.vue";
+import NavLine from "./NavLine.vue";
 import SelectBar from "./SelectBar.vue";
 import FootBar from "./FootBar.vue";
 
