@@ -36,12 +36,14 @@ def api():
         file.save(savePath)
         imageBytes = open(savePath, "rb").read()
     soul = flask.request.form.get("soul", "desire_avatar")
-    return util.requestGemini(
+    response = util.requestGemini(
         f"https://api-proxy.me/gemini/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key={apikey}",
         soul,
         imageBytes,
         flask.request.form.get("language", "中文"),
-    )["candidates"][0]["content"]["parts"][0]["text"]
+    )
+    print(response)
+    return response["candidates"][0]["content"]["parts"][0]["text"]
 
 
 app.run("0.0.0.0", port=5000)

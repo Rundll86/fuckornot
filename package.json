@@ -29,7 +29,7 @@
     },
     "scripts": {
         "build": "run-s build:*",
-        "dev": "run-p dev:*",
+        "dev": "run-p dev:frontend",
         "build:frontend": "webpack --mode production",
         "build:docker": "docker build -t fuck-or-not .",
         "dev:backend": "python backend/server.py",

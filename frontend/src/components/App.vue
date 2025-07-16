@@ -57,7 +57,11 @@ const language = ref(0);
 
 const languages = ["中文", "English", "日本語", "한국어"];
 const contextRequire = require.context("../../../public/prompts", false, /\.txt$/i);
-const soulsKeyMap = ref(contextRequire.keys().map(removeSuffixAndPrefix));
+const soulsKeyMap = ref(contextRequire.keys().map(removeSuffixAndPrefix).sort((a, b) => {
+    if (a.startsWith("⚠️") && !b.startsWith("⚠️")) return 1;
+    if (!a.startsWith("⚠️") && b.startsWith("⚠️")) return -1;
+    return 0;
+}));
 const soulsKeyPair = ref(Object.fromEntries(soulsKeyMap.value.map(key => [key, contextRequire(`./${key}.txt`).default])));
 
 function removeSuffixAndPrefix(target: string) {
