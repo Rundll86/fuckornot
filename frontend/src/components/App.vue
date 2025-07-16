@@ -5,8 +5,6 @@
             上传一张照片，让AI来评价图中角色的可操性。
             <img class="preview" :src="imageUrl" alt="Uploaded Image" v-if="imageUrl" />
             <button @click="upload">点击上传</button>
-            使用的Gemini ApiKey：
-            <input type="password" v-model="apikey">
             回复语言：
             <SelectBar :options="languages" v-model:selected="language" />
             使用的AI人格：
@@ -49,7 +47,6 @@ const loading = ref(false);
 const error = ref(false);
 const previewing = ref(false);
 
-const apikey = ref("");
 const useSoul = ref(0);
 
 const aiOutput = ref("");
@@ -127,7 +124,6 @@ async function start() {
     }
     form.append("soul", soulsKeyMap.value[useSoul.value]);
     form.append("language", languages[language.value]);
-    form.append("key", apikey.value);
     try {
         const response = JSON.parse(await fetch("/api", {
             method: "POST",

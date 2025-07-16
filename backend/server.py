@@ -3,7 +3,7 @@ from os import path
 from flask_cors import CORS
 from engine import util
 
-
+apikey = input("请输入你的Gemini API Key：")
 app = flask.Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -35,7 +35,6 @@ def api():
         savePath = path.join(util.cwd, "data", f"{util.getMD5(str(file.filename))}.jpg")
         file.save(savePath)
         imageBytes = open(savePath, "rb").read()
-    apikey = flask.request.form.get("key", "")
     soul = flask.request.form.get("soul", "desire_avatar")
     return util.requestGemini(
         f"https://api-proxy.me/gemini/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key={apikey}",
