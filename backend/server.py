@@ -1,9 +1,13 @@
-import flask, base64
+import flask, base64, sys, argparse
 from os import path
 from flask_cors import CORS
 from engine import util
 
-apikey = input("请输入你的Gemini API Key：")
+NO_GIVEN = "no given anything"
+parser = argparse.ArgumentParser()
+parser.add_argument("-k", "--apikey", type=str, default=NO_GIVEN, required=True)
+args = parser.parse_args()
+apikey = args.apikey
 app = flask.Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
